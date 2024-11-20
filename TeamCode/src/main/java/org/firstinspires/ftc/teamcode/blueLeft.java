@@ -14,17 +14,16 @@ public class blueLeft extends LinearOpMode {
         telemetry.update();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
-                .build();
 
-
-        TrajectorySequence traj2 = drive.trajectorySequenceBuilder(new Pose2d())
-                .build();
 
         waitForStart();
         if (opModeIsActive()) {
+
+            TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
+                    .lineToLinearHeading(new Pose2d(25,-40,Math.toRadians(0)))
+                    .build();
+
             drive.followTrajectorySequence(traj);
-            drive.followTrajectorySequence(traj2);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());

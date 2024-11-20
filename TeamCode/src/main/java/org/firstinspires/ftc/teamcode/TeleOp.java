@@ -22,10 +22,10 @@ public class TeleOp extends LinearOpMode {
     public static final int ARM_COUNTS_PER_MOTOR_REV = 1996;
     public static final double ARM_DEGREES_PER_COUNT = 360.0 / ARM_COUNTS_PER_MOTOR_REV;
 
-    public double armTargetAngle = 67.0;
+    public double armTargetAngle = 66.0;
 
     private static final int LIFT_TICKS_PER_STEP = 1; // Adjust as needed
-    private int liftTargetPosition = 0;
+    private int liftMaxPosition = -300;
 
     @Override public void runOpMode() {
         double drive = 0;
@@ -98,10 +98,10 @@ public class TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.left_bumper){
-                Turn.setPosition(Turn.getPosition() + 0.003);
+                Turn.setPosition(Turn.getPosition() + 0.009);
             }
             if(gamepad2.right_bumper){
-                Turn.setPosition(Turn.getPosition() - 0.003);
+                Turn.setPosition(Turn.getPosition() - 0.009);
             }
             if(gamepad1.left_trigger > 0.5){
                 Claw.setPower(.4); // open
@@ -119,39 +119,46 @@ public class TeleOp extends LinearOpMode {
             // pick up blocks on battery side
             // Arm Movement
             if (gamepad2.a) {
-                armTargetAngle = 110; // Set target angle to 90 degrees when 'a' is pressed
+                armTargetAngle = 75; // Set target angle to 90 degrees when 'a' is pressed
                 setArmPosition(armTargetAngle);
+                // Turn.setPosition( find placing on pole value )
             } else if (gamepad2.dpad_up) {
-                armTargetAngle -= 0.4;
+                armTargetAngle += 0.4;
                 setArmPosition(armTargetAngle); // decreases the arm angle by a value of 2 ticks
             } else if (gamepad2.dpad_down) {
-                armTargetAngle += 0.4;
+                armTargetAngle -= 0.4;
                 setArmPosition(armTargetAngle); // increases the arm angle by a value of 2 ticks
             }else if(gamepad2.y){
                 armTargetAngle = 13.8;
                 setArmPosition(armTargetAngle);
+                // Turn.setPosition(find picking up value);
+            }
+
+            if(gamepad1.x){
+                // find values for under the pole
+                // setArmPosition()
+                // Turn.setPosition()
             }
 
             double currentArmAngle = getArmAngle();
 
             // Lift Movement
 
-            if(currentArmAngle > 65) {
-                if (gamepad2.x) {
+            if(currentArmAngle > 65 || currentArmAngle < 65 && liftMotor.getCurrentPosition() > liftMaxPosition ){
+                if (gamepad2.x){
                     liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    liftMotor.setTargetPosition(liftMotor.getCurrentPosition() - 10);
+                    liftMotor.setTargetPosition(liftMotor.getCurrentPosition() - 25); // UP
                     liftMotor.setPower(0.6);
                 } else if (gamepad2.b) {
                     liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    liftMotor.setTargetPosition(liftMotor.getCurrentPosition() + 10);
+                    liftMotor.setTargetPosition(liftMotor.getCurrentPosition() + 25); // DOWN
                     liftMotor.setPower(0.6);
-
                 } else {
                     liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     liftMotor.setPower(0); // Stop the motor
                 }
             }else{
-                liftMotor.setPower(0);
+                liftMotor.setPower(0.15);
             }
 
 
@@ -164,7 +171,6 @@ public class TeleOp extends LinearOpMode {
 
             telemetry.addData("Arm Angle", currentArmAngle);
             telemetry.addData("Lift Position", liftMotor.getCurrentPosition());
-            telemetry.addData("Lift Angle Value", liftTargetPosition);
             telemetry.addData("Turn Value", Turn.getPosition());
             telemetry.update();
         }

@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -27,7 +30,7 @@ public class redLeft extends LinearOpMode {
     public static final int ARM_COUNTS_PER_MOTOR_REV = 1996;
     public static final double ARM_DEGREES_PER_COUNT = 360.0 / ARM_COUNTS_PER_MOTOR_REV;
 
-    public double armTargetAngle = 90.0;
+    public double armTargetAngle = 65.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -45,64 +48,71 @@ public class redLeft extends LinearOpMode {
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         setArmPosition(armTargetAngle);
         Turn.setPosition(0.01);
 
-
-        Claw.setPower(-0.3);
-        sleep(100);
+        Claw.setPower(-0.4);
+        sleep(50);
 
 
         telemetry.addLine("Waiting for Start");
         telemetry.update();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
-                .forward(25)
-                .turn(Math.toRadians(-50))
-                .lineToLinearHeading(new Pose2d(3.5,22,Math.toRadians(-50)))
-                .waitSeconds(1)
-              .addTemporalMarker(8,()->{
-                    setArmPosition(100);
-                })
 
 
-                .waitSeconds(2)
-                //add marker here
-                .build();
-
-    /*   TrajectorySequence traj2 = drive.trajectorySequenceBuilder(new Pose2d(0,0,Math.toRadians(-48)))
-                .lineToLinearHeading(new Pose2d(15,4,Math.toRadians(10)))
-                .waitSeconds(0.5)// marker to grab block
-               /* .back(10)
-                .lineToLinearHeading(new Pose2d(2,-2,Math.toRadians(-48)))
-                .back(12)
-                // add marker here
-                .forward(2)
-                .turn(Math.toRadians(48))
-                .lineTo(new Vector2d())
-                 .build();
-                */
-
-
-
-
-
+        resetRuntime();
         waitForStart();
         if (opModeIsActive()) {
             //setArmPosition(65)
+            TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
+                    .forward(28)
+                    .turn(Math.toRadians(-50))
+                    .addDisplacementMarker(()->{
+                        setArmPosition(100);
+                        Turn.setPosition(0.32);
+                        telemetry.addLine("I am inside the marker");
+                        telemetry.update();
+                    })
+                    .lineToLinearHeading(new Pose2d(9,20,Math.toRadians(-50)))
+                    .addDisplacementMarker(()->{
+                        Turn.setPosition(0);
+                    })
+                    .forward(4)
+                    .addTemporalMarker(7,()->{
+                        liftMotor.setPower(-0.6);
+                    })
+                    .addTemporalMarker(10,()->{
+                        liftMotor.setPower(0);
+                        Claw.setPower(0.1);
+                    })
+                    .back(5)
+                    .waitSeconds(5)
+                    /*
+                    .forward(4)
+                    .lineToLinearHeading(new Pose2d(5,22,Math.toRadians(-50)))
+                    .addDisplacementMarker(()->{
+                        Claw.setPower(0.3);
+                        Timer timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                Claw.setPower(0);
+                            }
+                        }, 75);
+                    })
+                    .forward(2)
+
+
+                    */
+                    .build();
             drive.followTrajectorySequence(traj);
-            Turn.setPosition(0.3);
-            /* setLiftPosition(-325);
-            Turn.setPosition(0.08);
+            telemetry.addLine("This is after turn");
+            telemetry.addData("Time", getRuntime());
+            telemetry.update();
 
-             */
-
-           // drive.followTrajectorySequence(traj2);
 
 
         }
@@ -116,7 +126,7 @@ public class redLeft extends LinearOpMode {
     public void setLiftPosition (double motorTargetPos) {
         int value = (int) motorTargetPos;
         liftMotor.setTargetPosition(value);
-        liftMotor.setPower(0.5);
+        liftMotor.setPower(0.7);
     }
 
 }
