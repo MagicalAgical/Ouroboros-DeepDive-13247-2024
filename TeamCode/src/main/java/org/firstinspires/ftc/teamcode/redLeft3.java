@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class redLeft extends LinearOpMode {
+public class redLeft3 extends LinearOpMode {
     private DcMotor armMotor = null;
     private DcMotor liftMotor = null;
 
@@ -21,7 +21,7 @@ public class redLeft extends LinearOpMode {
     public static final int ARM_COUNTS_PER_MOTOR_REV = 1996;
     public static final double ARM_DEGREES_PER_COUNT = 360.0 / ARM_COUNTS_PER_MOTOR_REV;
 
-    public double armTargetAngle = 65.0;
+    public double armTargetAngle = 68.0;
 
     public void runOpMode() throws InterruptedException {
         telemetry.addLine("Waiting for Start");
@@ -46,33 +46,54 @@ public class redLeft extends LinearOpMode {
         Turn.setPosition(0.01);
 
         Claw.setPower(-0.4);
-        sleep(50);
 
         waitForStart();
         if (opModeIsActive()) {
 
             TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
                     .addDisplacementMarker(()->{
-                        Turn.setPosition(0.30);
+                        Turn.setPosition(0.595);
                     })
-                    .lineToLinearHeading(new Pose2d(28,-28,Math.toRadians(0)))
+                    .lineToLinearHeading(new Pose2d(20.3,-24,Math.toRadians(0)))
+                    .forward(0.3)
                     .addTemporalMarker(2,()->{
-                        liftMotor.setPower(-0.53);
+                        liftMotor.setPower(-0.65);
                     })
-                    .forward(2)
-                    .addTemporalMarker(2.6,()->{
-                        Turn.setPosition(0.27);
-                        setArmPosition(70);
-                        liftMotor.setPower(-0.1);
+                    .addTemporalMarker(4,()->{
+                        setArmPosition(66);
                     })
-                    .back(0)//new par
-                    .waitSeconds(2)
+                    .addTemporalMarker(2.3,()->{
+                        Claw.setPower(-0.5);
+                    })
+                    .forward(0.7)
+                    .addTemporalMarker(2.36,()->{
+                        Turn.setPosition(0.56);
+                        liftMotor.setPower(-0.65);
+                    })
+                    .forward(0.5)
+                    .waitSeconds(1)
                     .addDisplacementMarker(()->{
-                        //setArmPosition(90);
+                        setArmPosition(40);
+                    })
+                    .waitSeconds(1.5)
+                    .addTemporalMarker(2.6,()->{
+                        liftMotor.setPower(0.65);
+                    })
+                    .addTemporalMarker(2.7,()->{
                         liftMotor.setPower(0);
                     })
-                    .back(9)
-                    .waitSeconds(1)
+                    .addDisplacementMarker(()->{
+                        //setArmPosition(90);
+                        Claw.setPower(0);
+                    })
+                    .addTemporalMarker(10.5,()->{
+                        Claw.setPower(0.5);
+                    })
+                    .addTemporalMarker(11,()->{
+                        Claw.setPower(0);
+                    })
+                    .waitSeconds(3)
+                    .back(7)
                     /* .lineToLinearHeading(new Pose2d(23.5,-100,Math.toRadians(-4)))
                      .addDisplacementMarker(()->{
                          setArmPosition(13.5);
@@ -92,7 +113,17 @@ public class redLeft extends LinearOpMode {
                      */
                     .build();
 
+
+            TrajectorySequence traj2 = drive.trajectorySequenceBuilder(new Pose2d())
+                    .back(5)
+                    .build();
+
+
             drive.followTrajectorySequence(traj);
+            Claw.setPower(0.4);
+            sleep(100);
+            Claw.setPower(0);
+            drive.followTrajectorySequence(traj2);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());

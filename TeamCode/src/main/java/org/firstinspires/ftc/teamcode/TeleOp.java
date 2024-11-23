@@ -25,7 +25,7 @@ public class TeleOp extends LinearOpMode {
     public double armTargetAngle = 66.0;
 
     private static final int LIFT_TICKS_PER_STEP = 1; // Adjust as needed
-    private int liftMaxPosition = -300;
+    private int liftMaxPosition = -370;
 
     @Override public void runOpMode() {
         double drive = 0;
@@ -98,18 +98,18 @@ public class TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.left_bumper){
-                Turn.setPosition(Turn.getPosition() + 0.009);
+                Turn.setPosition(Turn.getPosition() + 0.003);
             }
             if(gamepad2.right_bumper){
-                Turn.setPosition(Turn.getPosition() - 0.009);
+                Turn.setPosition(Turn.getPosition() - 0.003);
             }
-            if(gamepad1.left_trigger > 0.5){
+            if(gamepad2.left_trigger > 0.5){
                 Claw.setPower(.4); // open
                 sleep(50);
             }else{
                 Claw.setPower(0);
             }
-            if(gamepad1.right_trigger > 0.5){
+            if(gamepad2.right_trigger > 0.5){
                 Claw.setPower(-.4); // close
                 sleep(50);
             }else{
@@ -119,20 +119,35 @@ public class TeleOp extends LinearOpMode {
             // pick up blocks on battery side
             // Arm Movement
             if (gamepad2.a) {
-                armTargetAngle = 75; // Set target angle to 90 degrees when 'a' is pressed
+                armTargetAngle = 75; // Set target angle to 75 degrees when 'a' is pressed
                 setArmPosition(armTargetAngle);
                 // Turn.setPosition( find placing on pole value )
-            } else if (gamepad2.dpad_up) {
-                armTargetAngle += 0.4;
+            } else if (gamepad2.dpad_up && liftMotor.getCurrentPosition() > -350) {
+                armTargetAngle += 0.25;
                 setArmPosition(armTargetAngle); // decreases the arm angle by a value of 2 ticks
-            } else if (gamepad2.dpad_down) {
-                armTargetAngle -= 0.4;
-                setArmPosition(armTargetAngle); // increases the arm angle by a value of 2 ticks
-            }else if(gamepad2.y){
+            } else if (gamepad2.dpad_down && liftMotor.getCurrentPosition() > -350) {
+                armTargetAngle -= 0.25;
+                setArmPosition(armTargetAngle);
+            }// increases the arm angle by a value of 2 ticks
+           /* }else if(gamepad2.y){
                 armTargetAngle = 13.8;
                 setArmPosition(armTargetAngle);
                 // Turn.setPosition(find picking up value);
+            }else if(gamepad2.dpad_up ){
+                armTargetAngle += 0.15;
+                setArmPosition(armTargetAngle);
+            }else if(gamepad2.dpad_down && armTargetAngle < 180 && liftMotor.getCurrentPosition() > -200){
+                armTargetAngle -= 0.15;
+                setArmPosition(armTargetAngle);
+            }else if(gamepad2.dpad_up && armTargetAngle < 180 && liftMotor.getCurrentPosition() >= -300 ){
+                armTargetAngle -= 0.05;
+                setArmPosition(armTargetAngle);
+            }else if(gamepad2.dpad_down && armTargetAngle < 180 && liftMotor.getCurrentPosition() > -300){
+                armTargetAngle -= 0.05;
+                setArmPosition(armTargetAngle);
             }
+
+            */
 
             if(gamepad1.x){
                 // find values for under the pole
@@ -144,7 +159,7 @@ public class TeleOp extends LinearOpMode {
 
             // Lift Movement
 
-            if(currentArmAngle > 65 || currentArmAngle < 65 && liftMotor.getCurrentPosition() > liftMaxPosition ){
+            if(currentArmAngle > 67 || currentArmAngle < 67 && liftMotor.getCurrentPosition() > liftMaxPosition ){
                 if (gamepad2.x){
                     liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     liftMotor.setTargetPosition(liftMotor.getCurrentPosition() - 25); // UP
@@ -158,7 +173,7 @@ public class TeleOp extends LinearOpMode {
                     liftMotor.setPower(0); // Stop the motor
                 }
             }else{
-                liftMotor.setPower(0.15);
+                liftMotor.setPower(0);
             }
 
 

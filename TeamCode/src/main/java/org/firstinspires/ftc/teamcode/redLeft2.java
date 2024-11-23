@@ -31,8 +31,9 @@ public class redLeft2 extends LinearOpMode {
         armMotor = hardwareMap.get(DcMotor.class, "Arm");
         liftMotor = hardwareMap.get(DcMotor.class, "Lift");
 
-        Claw = hardwareMap.get(CRServo.class, "Claw");
+         Claw = hardwareMap.get(CRServo.class, "Claw");
         Turn = hardwareMap.get(Servo.class, "Turn");
+
 
         armMotor.setTargetPosition(360);
 
@@ -45,34 +46,77 @@ public class redLeft2 extends LinearOpMode {
         Turn.setPosition(0.01);
 
         Claw.setPower(-0.4);
-        sleep(50);
 
         waitForStart();
         if (opModeIsActive()) {
 
             TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
-                    .addDisplacementMarker(()->{
-                        Turn.setPosition(0.50);
+                  .addDisplacementMarker(()->{
+                        Turn.setPosition(0.36);
                     })
-                    .lineToLinearHeading(new Pose2d(26.5,-40,Math.toRadians(0)))
-                    .addTemporalMarker(2,()->{
-                        liftMotor.setPower(-0.65);
+                    .lineToLinearHeading(new Pose2d(26.5,-24,Math.toRadians(0)))
+                   .addTemporalMarker(2,()->{
+                        liftMotor.setPower(-0.6);
                     })
-                    .addTemporalMarker(2.75,()->{
-                        Turn.setPosition(0.53);
-                        setArmPosition(70);
-                        liftMotor.setPower(-0.45);
+                    .forward(1)
+                    .addTemporalMarker(2.2,()->{
+                        Claw.setPower(-0.5);
+                        Turn.setPosition(0.3);
                     })
-                    .waitSeconds(2)
-                    .forward(0.2)
-                    .addDisplacementMarker(()->{
-                        //setArmPosition(90);
+                    .addTemporalMarker(2.28,()->{
+                        setArmPosition(75);
+                        liftMotor.setPower(-0.3);
+                    })
+                    .back(4)
+                    .waitSeconds(1)
+                    .addTemporalMarker(2.6,()->{
+                       liftMotor.setPower(-0.65);
+                    })
+                    .addTemporalMarker(2.7,()->{
                         liftMotor.setPower(0);
                     })
+                   .addDisplacementMarker(()->{
+                        //setArmPosition(90);
+                        Claw.setPower(0);
+                    })
+                    .addTemporalMarker(10.5,()->{
+                        Claw.setPower(0.5);
+                    })
+                    .addTemporalMarker(11,()->{
+                        Claw.setPower(0);
+                    })
+                    .waitSeconds(3)
+                    .back(7)
+                   /* .lineToLinearHeading(new Pose2d(23.5,-100,Math.toRadians(-4)))
+                    .addDisplacementMarker(()->{
+                        setArmPosition(13.5);
+                    })
+                    .forward(0.8)
+                    .addDisplacementMarker(()->{
+                        setArmPosition(165);
+                    })
+                    .back(7.5)
+                    .waitSeconds(2)
+                    .addDisplacementMarker(()->{
+                        setArmPosition(90);
+                    })
+                    .lineToLinearHeading(new Pose2d(23.5,-110))
+                    .waitSeconds(2)
+
+                    */
+                    .build();
+
+
+            TrajectorySequence traj2 = drive.trajectorySequenceBuilder(new Pose2d())
                     .back(5)
                     .build();
 
+
             drive.followTrajectorySequence(traj);
+            Claw.setPower(0.4);
+            sleep(100);
+            Claw.setPower(0);
+            drive.followTrajectorySequence(traj2);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
@@ -85,7 +129,7 @@ public class redLeft2 extends LinearOpMode {
     public void setArmPosition(double angle) {
         int targetPosition = (int) (angle / ARM_DEGREES_PER_COUNT);
         armMotor.setTargetPosition(targetPosition);
-        armMotor.setPower(0.2);
+        armMotor.setPower(0.3);
     }
 
 }
