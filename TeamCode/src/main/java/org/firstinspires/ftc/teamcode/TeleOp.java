@@ -25,7 +25,7 @@ public class TeleOp extends LinearOpMode {
     public double armTargetAngle = 66.0;
 
     private static final int LIFT_TICKS_PER_STEP = 1; // Adjust as needed
-    private int liftMaxPosition = -370;
+    private int liftMaxPosition = -330;
 
     @Override public void runOpMode() {
         double drive = 0;
