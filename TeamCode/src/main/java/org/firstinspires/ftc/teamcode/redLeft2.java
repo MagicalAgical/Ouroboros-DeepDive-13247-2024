@@ -51,42 +51,25 @@ public class redLeft2 extends LinearOpMode {
         if (opModeIsActive()) {
 
             TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
-                  .addDisplacementMarker(()->{
-                        Turn.setPosition(0.36);
+                    .addTemporalMarker(()->{
+                        Claw.setPower(-0.3);
                     })
-                    .lineToLinearHeading(new Pose2d(26.5,-24,Math.toRadians(0)))
-                   .addTemporalMarker(2,()->{
-                        liftMotor.setPower(-0.6);
-                    })
-                    .forward(1)
-                    .addTemporalMarker(2.2,()->{
-                        Claw.setPower(-0.5);
+                    .forward(23)
+                    .turn(Math.toRadians(-45))
+                    .addDisplacementMarker(()->{
+                        setArmPosition(100);
                         Turn.setPosition(0.3);
                     })
-                    .addTemporalMarker(2.28,()->{
-                        setArmPosition(75);
-                        liftMotor.setPower(-0.3);
-                    })
-                    .back(4)
-                    .waitSeconds(1)
-                    .addTemporalMarker(2.6,()->{
-                       liftMotor.setPower(-0.65);
-                    })
-                    .addTemporalMarker(2.7,()->{
+                    .addTemporalMarker(9,()->{
+                        liftMotor.setPower(-0.6);
+                     })
+                    .back(23.5)
+                    .addTemporalMarker(10.2,()->{
                         liftMotor.setPower(0);
-                    })
-                   .addDisplacementMarker(()->{
-                        //setArmPosition(90);
                         Claw.setPower(0);
                     })
-                    .addTemporalMarker(10.5,()->{
-                        Claw.setPower(0.5);
-                    })
-                    .addTemporalMarker(11,()->{
-                        Claw.setPower(0);
-                    })
-                    .waitSeconds(3)
-                    .back(7)
+                    .back(0.5)
+                    .waitSeconds(2)
                    /* .lineToLinearHeading(new Pose2d(23.5,-100,Math.toRadians(-4)))
                     .addDisplacementMarker(()->{
                         setArmPosition(13.5);
@@ -107,16 +90,11 @@ public class redLeft2 extends LinearOpMode {
                     .build();
 
 
-            TrajectorySequence traj2 = drive.trajectorySequenceBuilder(new Pose2d())
-                    .back(5)
-                    .build();
-
 
             drive.followTrajectorySequence(traj);
             Claw.setPower(0.4);
             sleep(100);
             Claw.setPower(0);
-            drive.followTrajectorySequence(traj2);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());

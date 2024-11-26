@@ -47,18 +47,18 @@ public class Right1 extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineToLinearHeading(new Pose2d(0,4,Math.toRadians(0)))
+                .strafeRight(4)
                 .forward(35)
                 .waitSeconds(1)
-                .back(10)
+                .back(13)
                 .waitSeconds(1)
-                .strafeRight(60)
+                .strafeRight(64)
                 .waitSeconds(1)
                 .addDisplacementMarker(()->{
                     setArmPosition(18);
                 })
                 .waitSeconds(1)
-                .back(11)
+                .back(3)
                 .waitSeconds(1)
                 .build();
         waitForStart();
